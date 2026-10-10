@@ -1,0 +1,15 @@
+# Server overrides: docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+# Postgres stays on the internal Docker network; the app listens on loopback only, behind nginx.
+services:
+  postgres:
+    ports: !reset []
+    restart: unless-stopped
+
+  app:
+    ports: !reset ['127.0.0.1:3100:3000']
+    restart: unless-stopped
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    logging:
+      driver: json-file
+      options: { max-size: '20m', max-file: '5' }
