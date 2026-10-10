@@ -6,7 +6,7 @@ services:
     restart: unless-stopped
 
   app:
-    ports: !reset ['127.0.0.1:3100:3000']
+    ports: !override ['127.0.0.1:3100:3000']
     restart: unless-stopped
     extra_hosts:
       - 'host.docker.internal:host-gateway'
