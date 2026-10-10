@@ -1,0 +1,27 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
+      POSTGRES_DB: integration
+    ports: ['5432:5432']
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U app']
+      interval: 2s
+      retries: 20
+
+  app:
+    build: .
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://app:app@postgres:5432/integration
+      # PosAPI runs on the host machine
+      EBARIMT_POSAPI_URL: http://host.docker.internal:7080
+    ports: ['3000:3000']
+    depends_on:
+      postgres: { condition: service_healthy }
+
+volumes:
+  pgdata:
